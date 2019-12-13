@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from '@emotion/styled';
 import { Global, css } from '@emotion/core';
 
 import { color, size } from '../theme';
@@ -17,19 +18,28 @@ const globalStyles = css`
     font-family: 'Poppins', sans-serif;
     font-weight: 300;
     font-size: ${size.normalFont};
-    background-color: ${color.lightBackground};
-    color: ${color.primaryFontLightBackground};
   }
+`;
+
+const LayoutContainer = styled.div`
+  display: flex;
+`;
+
+const PageContainer = styled.main`
+  flex: 1 80%;
+  padding: 10px;
 `;
 
 function Layout(props) {
   return (
     <>
       <Global styles={globalStyles} />
-      <div>
+      <LayoutContainer>
         <Sidebar />
-        {props.children}
-      </div>
+        <PageContainer>
+          {props.children}
+        </PageContainer>
+      </LayoutContainer>
     </>
   );
 }

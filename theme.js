@@ -3,12 +3,13 @@
  */
 
 const color = {
-  lightBackground: '#fff',
+  lightBackground: '#ededed',
   primaryFontLightBackground: '#222'
 };
 
 const size = {
-  normalFont: '18px'
+  titleFontPx: 30,
+  normalFontPx: 18
 };
 
 export { color, size };

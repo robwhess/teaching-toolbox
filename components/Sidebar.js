@@ -7,9 +7,10 @@ import { color, size } from '../theme';
 
 const SidebarContainer = styled.aside`
   max-width: 300px;
+  min-height: 100vh;
   padding: 20px;
-  background-color: ${color.lightBackground};
-  color: ${color.primaryFontLightBackground}
+  background-color: ${color.sidebar.background};
+  color: ${color.sidebar.font}
 `;
 
 const HeaderContainer = styled.div`

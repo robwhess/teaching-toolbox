@@ -3,8 +3,16 @@
  */
 
 const color = {
-  lightBackground: '#ededed',
-  primaryFontLightBackground: '#222'
+  primary: {
+    background: '#fff',
+    font: '#000',
+    border: '#dadada'
+  },
+  sidebar: {
+    background: '#ededed',
+    font: '#222'
+  },
+  complete: '#73ba56'
 };
 
 const size = {

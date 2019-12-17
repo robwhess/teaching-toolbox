@@ -2,28 +2,11 @@ import React from 'react';
 import styled from '@emotion/styled';
 
 import Layout from '../components/Layout';
-import { color } from '../theme';
 
 const SectionContainer = styled.section`
-  border-left: 1px solid ${color.primary.border};
-  padding: 10px;
-  padding-left: 30px;
-  margin-left: 10px;
-`;
-
-const SectionHeader = styled.h2`
-  position: relative;
-  margin: 0;
-  &::before {
-    display: inline-block;
-    position: absolute;
-    left: -35px;
-    top: 20%;
-    content: '';
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: ${props => props.sectionComplete ? color.complete : color.primary.border};
+  margin-bottom: 20px;
+  h2 {
+    margin: 0;
   }
 `;
 
@@ -32,15 +15,15 @@ function Index() {
     <Layout>
       <h1>Application for a Recommendation</h1>
       <SectionContainer>
-        <SectionHeader>Personal information</SectionHeader>
+        <h2>Personal information</h2>
       </SectionContainer>
 
       <SectionContainer>
-        <SectionHeader>Relationship with me</SectionHeader>
+        <h2>Relationship with me</h2>
       </SectionContainer>
 
       <SectionContainer>
-        <SectionHeader>General academic information</SectionHeader>
+        <h2>General academic information</h2>
       </SectionContainer>
     </Layout>
   );

@@ -1,3 +1,7 @@
+/*
+ * Sidebar layout for all pages on site.
+ */
+
 import React from 'react';
 import styled from '@emotion/styled';
 import { Global, css } from '@emotion/core';
@@ -6,7 +10,7 @@ import { size } from '../theme';
 import Sidebar from './Sidebar';
 
 const globalStyles = css`
-  @import url('https://fonts.googleapis.com/css?family=Poppins:300,400&display=swap');
+  @import url('https://fonts.googleapis.com/css?family=Work+Sans:200,400&display=swap');
 
   * {
     box-sizing: border-box;
@@ -15,9 +19,13 @@ const globalStyles = css`
   body {
     padding: 0;
     margin: 0;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 300;
-    font-size: ${size.normalFont};
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 400;
+    font-size: ${size.font.normal}px;
+  }
+
+  h1, h2, h3 {
+    font-weight: 200;
   }
 `;
 

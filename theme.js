@@ -6,18 +6,23 @@ const color = {
   primary: {
     background: '#fff',
     font: '#000',
-    border: '#dadada'
+    border: '#dadada',
+    focused: '#000'
   },
   sidebar: {
     background: '#ededed',
     font: '#222'
   },
-  complete: '#73ba56'
+  complete: '#73ba56',
+  invalid: '#e04d2d'
 };
 
 const size = {
-  titleFontPx: 30,
-  normalFontPx: 18
+  font: {
+    title: 30,
+    normal: 18,
+    extraSmall: 8
+  }
 };
 
 export { color, size };

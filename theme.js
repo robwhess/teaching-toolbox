@@ -20,8 +20,9 @@ const color = {
 const size = {
   font: {
     title: 30,
+    large: 24,
     normal: 18,
-    extraSmall: 8
+    small: 14
   }
 };
 

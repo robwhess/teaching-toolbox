@@ -7,15 +7,13 @@ import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 
 import { color, size } from '../theme';
-
-const InputContainer = styled.div`
-
-`;
+import generateID from '../lib/generateID';
 
 const Input = styled.input`
   font-size: ${size.font.large}px;
   font-family: inherit;
   font-weight: 200;
+  width: ${props => props.containerWidth ? '100%' : 'initial'};
   border: 1px solid ${color.primary.border};
   padding: 4px;
   &:focus {
@@ -30,19 +28,25 @@ const Label = styled.label`
   font-size: ${size.font.small}px;
 `;
 
-function LabeledTextInput({ label, value, onChange }) {
+function LabeledTextInput({ label, value, onChange, ...rest }) {
+  const id = generateID('input');
   return (
-    <InputContainer>
-      <Input value={value} onChange={onChange} />
-      <Label>{label}</Label>
-    </InputContainer>
+    <div>
+      <Input id={id} value={value} onChange={onChange} {...rest} />
+      <Label htmlFor={id}>{label}</Label>
+    </div>
   );
 }
 
 LabeledTextInput.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  containerWidth: PropTypes.bool,
+};
+
+LabeledTextInput.defaultProps = {
+  containerWidth: false
 };
 
 export default LabeledTextInput;

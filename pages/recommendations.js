@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import { breakpoints } from '../theme';
 import Layout from '../components/Layout';
 import LabeledTextInput from '../components/LabeledTextInput';
+import Button from '../components/Button';
 
 const PageTitle = styled.h1`
   @media (max-width: ${breakpoints.sm}px) {
@@ -27,7 +28,7 @@ const InputRowContainer = styled.div`
 
 const InputContainer = styled.div`
   margin: 10px;
-  max-width: 400px;
+  max-width: 500px;
   flex: ${props => props.flex || 'auto'};
   @media (max-width: ${breakpoints.xs}px) {
     max-width: 100%;
@@ -44,7 +45,7 @@ function Index() {
       <SectionContainer>
         <h2>Personal information</h2>
         <InputRowContainer>
-          <InputContainer flex={2}>
+          <InputContainer>
             <LabeledTextInput
               label="Name"
               containerWidth
@@ -52,7 +53,7 @@ function Index() {
               onChange={(e) => { setName(e.target.value); }}
             />
           </InputContainer>
-          <InputContainer flex={3}>
+          <InputContainer>
             <LabeledTextInput
               label="@oregonstate.edu email"
               containerWidth
@@ -70,6 +71,8 @@ function Index() {
       <SectionContainer>
         <h2>General academic information</h2>
       </SectionContainer>
+
+      <Button>Submit</Button>
     </Layout>
   );
 }

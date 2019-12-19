@@ -13,8 +13,17 @@ const color = {
     background: '#ededed',
     font: '#222'
   },
+
   complete: '#73ba56',
-  invalid: '#e04d2d'
+  invalid: '#e04d2d',
+
+  button: {
+    primary: {
+      background: '#73ba56',
+      hover: '#7edb58',
+      font: '#fff'
+    }
+  }
 };
 
 const size = {

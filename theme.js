@@ -26,4 +26,9 @@ const size = {
   }
 };
 
-export { color, size };
+const breakpoints = {
+  sm: 800,
+  xs: 512
+};
+
+export { color, size, breakpoints };

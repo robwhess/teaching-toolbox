@@ -7,14 +7,19 @@ import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faToolbox } from '@fortawesome/free-solid-svg-icons';
 
-import { color, size } from '../theme';
+import { color, size, breakpoints } from '../theme';
 
 const SidebarContainer = styled.aside`
   max-width: 300px;
   min-height: 100vh;
   padding: 20px;
   background-color: ${color.sidebar.background};
-  color: ${color.sidebar.font}
+  color: ${color.sidebar.font};
+  @media (max-width: ${breakpoints.sm}px) {
+    min-height: 0;
+    max-width: 100%;
+    width: 100%;
+  }
 `;
 
 const HeaderContainer = styled.div`

@@ -6,7 +6,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { Global, css } from '@emotion/core';
 
-import { size } from '../theme';
+import { size, breakpoints } from '../theme';
 import Sidebar from './Sidebar';
 
 const globalStyles = css`
@@ -31,6 +31,9 @@ const globalStyles = css`
 
 const LayoutContainer = styled.div`
   display: flex;
+  @media (max-width: ${breakpoints.sm}px) {
+    flex-direction: column;
+  }
 `;
 
 const PageContainer = styled.main`

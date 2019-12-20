@@ -9,8 +9,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
 import Button from '../components/Button';
+import generateID from '../lib/generateID';
 import useOutsideClickListener from '../lib/useOutsideClickListener';
 import { color } from '../theme';
+
+/*
+ * Numeric keydown event codes for various keys.
+ */
+const keyCode = Object.freeze({
+  'TAB': 9,
+  'RETURN': 13,
+  'ESC': 27,
+  'SPACE': 32,
+  'UP': 38,
+  'DOWN': 40
+});
 
 const DropdownContainer = styled.div`
   position: relative;
@@ -65,6 +78,7 @@ const DropdownMenuItem = styled.a`
 `;
 
 function DropdownSelect({ label, options }) {
+  const id = generateID('dropdown');
   const [ isExpanded, setIsExpanded ] = useState(false);
   const [ selection, setSelection ] = useState({ label: label });
   const dropdownRef = useRef(null);
@@ -73,22 +87,47 @@ function DropdownSelect({ label, options }) {
     setIsExpanded(false);
   }
 
+  function openDropdown() {
+    setIsExpanded(true);
+  }
+
+  function handleDropdownButtonKeydown(event) {
+    switch (event.keyCode) {
+      case keyCode.RETURN:
+      case keyCode.SPACE:
+      case keyCode.DOWN:
+        openDropdown();
+        break;
+
+      case keyCode.UP:
+        openDropdown();
+        break;
+
+      default:
+        break;
+    }
+  }
+
   useOutsideClickListener(dropdownRef, closeDropdown);
 
   return (
     <DropdownContainer ref={dropdownRef}>
       <DropdownButton
+        id={id}
         isExpanded={isExpanded}
         aria-haspopup="true"
         aria-expanded={isExpanded.toString()}
         onClick={() => { setIsExpanded(!isExpanded); }}
+        onKeyDown={handleDropdownButtonKeydown}
       >
         <DropdownLabel>{selection.label}</DropdownLabel>
         <DropdownArrow isExpanded={isExpanded}><FontAwesomeIcon icon={faCaretDown} /></DropdownArrow>
       </DropdownButton>
-      <DropdownMenu role="menu" isExpanded={isExpanded}>
+      <DropdownMenu role="menu" aria-labelledby={id} isExpanded={isExpanded}>
         {options.map((option, i) => (
-          <DropdownMenuItem key={i} href='#'>{option.label}</DropdownMenuItem>
+          <DropdownMenuItem key={i} href='#' role="menuitem">
+            {option.label}
+          </DropdownMenuItem>
         ))}
       </DropdownMenu>
     </DropdownContainer>

@@ -2,13 +2,14 @@
  * Dropdown select component.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
 import Button from '../components/Button';
+import useOutsideClickListener from '../lib/useOutsideClickListener';
 import { color } from '../theme';
 
 const DropdownContainer = styled.div`
@@ -66,8 +67,16 @@ const DropdownMenuItem = styled.a`
 function DropdownSelect({ label, options }) {
   const [ isExpanded, setIsExpanded ] = useState(false);
   const [ selection, setSelection ] = useState({ label: label });
+  const dropdownRef = useRef(null);
+
+  function closeDropdown() {
+    setIsExpanded(false);
+  }
+
+  useOutsideClickListener(dropdownRef, closeDropdown);
+
   return (
-    <DropdownContainer>
+    <DropdownContainer ref={dropdownRef}>
       <DropdownButton
         isExpanded={isExpanded}
         aria-haspopup="true"
@@ -77,7 +86,7 @@ function DropdownSelect({ label, options }) {
         <DropdownLabel>{selection.label}</DropdownLabel>
         <DropdownArrow isExpanded={isExpanded}><FontAwesomeIcon icon={faCaretDown} /></DropdownArrow>
       </DropdownButton>
-      <DropdownMenu isExpanded={isExpanded}>
+      <DropdownMenu role="menu" isExpanded={isExpanded}>
         {options.map((option, i) => (
           <DropdownMenuItem key={i} href='#'>{option.label}</DropdownMenuItem>
         ))}

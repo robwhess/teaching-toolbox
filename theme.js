@@ -7,7 +7,8 @@ const color = {
     background: '#fff',
     font: '#000',
     border: '#dadada',
-    focused: '#000'
+    focused: '#000',
+    hover: '#ededed'
   },
   sidebar: {
     background: '#ededed',

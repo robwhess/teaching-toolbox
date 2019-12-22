@@ -21,6 +21,10 @@ const keyCode = Object.freeze({
   'RETURN': 13,
   'ESC': 27,
   'SPACE': 32,
+  'PAGEUP': 33,
+  'PAGEDOWN': 34,
+  'END': 35,
+  'HOME': 36,
   'UP': 38,
   'DOWN': 40
 });
@@ -75,32 +79,67 @@ const DropdownMenuItem = styled.a`
   padding: 10px 20px;
   text-decoration: none;
   color: ${color.primary.font};
+  &:hover, &:focus {
+    background-color: ${color.primary.hover};
+  }
 `;
 
 function DropdownSelect({ label, options }) {
   const id = generateID('dropdown');
   const [ isExpanded, setIsExpanded ] = useState(false);
-  const [ selection, setSelection ] = useState({ label: label });
-  const dropdownRef = useRef(null);
+  const [ selectionIdx, setSelectionIdx ] = useState(-1);
+  const dropdownContainerRef = useRef(null);
+  const dropdownButtonRef = useRef(null);
+  const optionRefs = options.map(() => useRef(null));
 
   function closeDropdown() {
     setIsExpanded(false);
+    dropdownButtonRef.current.focus();
   }
 
   function openDropdown() {
     setIsExpanded(true);
   }
 
+  function setFocusedOption(idx) {
+    /*
+     * Set focus after a brief timeout so the component has a chance to become
+     * visible.
+     */
+    setTimeout(() => {
+      optionRefs[idx].current.focus();
+    }, 10);
+  }
+
+  function handleDropDownButtonClick() {
+    setIsExpanded(!isExpanded);
+    dropdownButtonRef.current.focus();
+  }
+
   function handleDropdownButtonKeydown(event) {
     switch (event.keyCode) {
       case keyCode.RETURN:
       case keyCode.SPACE:
+        openDropdown(0);
+        setFocusedOption(0);
+        /*
+         * Prevent default action here so these keys are not treated as clicks.
+         */
+        event.preventDefault();
+        break;
+
       case keyCode.DOWN:
         openDropdown();
+        setFocusedOption(0);
         break;
 
       case keyCode.UP:
         openDropdown();
+        setFocusedOption(options.length - 1);
+        break;
+
+      case keyCode.ESC:
+        closeDropdown();
         break;
 
       default:
@@ -108,24 +147,78 @@ function DropdownSelect({ label, options }) {
     }
   }
 
-  useOutsideClickListener(dropdownRef, closeDropdown);
+  function handleDropdownMenuItemClick(idx) {
+    setSelectionIdx(idx);
+    closeDropdown();
+  }
+
+  function handleDropdownMenuItemKeydown(event, idx) {
+    switch (event.keyCode) {
+      case keyCode.RETURN:
+      case keyCode.SPACE:
+        setSelectionIdx(idx);
+        closeDropdown();
+        /*
+         * Prevent default action here so these keys are not treated as clicks.
+         */
+        event.preventDefault();
+        break;
+
+      case keyCode.DOWN:
+        setFocusedOption((idx + 1) % options.length);
+        break;
+
+      case keyCode.UP:
+        idx = idx === 0 ? options.length - 1 : idx - 1;
+        setFocusedOption(idx);
+        break;
+
+      case keyCode.HOME:
+      case keyCode.PAGEUP:
+        setFocusedOption(0);
+        break;
+
+      case keyCode.END:
+      case keyCode.PAGEDOWN:
+        setFocusedOption(options.length - 1);
+        break;
+
+      case keyCode.TAB:
+      case keyCode.ESC:
+        closeDropdown();
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  useOutsideClickListener(dropdownContainerRef, closeDropdown);
 
   return (
-    <DropdownContainer ref={dropdownRef}>
+    <DropdownContainer ref={dropdownContainerRef}>
       <DropdownButton
         id={id}
+        ref={dropdownButtonRef}
         isExpanded={isExpanded}
         aria-haspopup="true"
         aria-expanded={isExpanded.toString()}
-        onClick={() => { setIsExpanded(!isExpanded); }}
+        onClick={handleDropDownButtonClick}
         onKeyDown={handleDropdownButtonKeydown}
       >
-        <DropdownLabel>{selection.label}</DropdownLabel>
+        <DropdownLabel>{(options[selectionIdx] && options[selectionIdx].label) || label}</DropdownLabel>
         <DropdownArrow isExpanded={isExpanded}><FontAwesomeIcon icon={faCaretDown} /></DropdownArrow>
       </DropdownButton>
       <DropdownMenu role="menu" aria-labelledby={id} isExpanded={isExpanded}>
         {options.map((option, i) => (
-          <DropdownMenuItem key={i} href='#' role="menuitem">
+          <DropdownMenuItem
+            key={i}
+            href="#"
+            ref={optionRefs[i]}
+            role="menuitem"
+            onClick={() => { handleDropdownMenuItemClick(i); }}
+            onKeyDown={(event) => { handleDropdownMenuItemKeydown(event, i); }}
+          >
             {option.label}
           </DropdownMenuItem>
         ))}

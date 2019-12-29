@@ -6,8 +6,8 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { Global, css } from '@emotion/core';
 
-import { size, breakpoints } from '../theme';
 import Sidebar from './Sidebar';
+import { size, breakpoints } from '../theme';
 
 const globalStyles = css`
   @import url('https://fonts.googleapis.com/css?family=Work+Sans:200,400&display=swap');

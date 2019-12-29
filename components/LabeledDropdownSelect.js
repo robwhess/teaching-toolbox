@@ -1,5 +1,5 @@
 /*
- * Dropdown select component.
+ * Labeled ropdown select component with pretty good WAI-ARIA/keyboard support.
  */
 
 import React, { useState, useRef } from 'react';
@@ -8,7 +8,8 @@ import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
-import Button from '../components/Button';
+import Button from './Button';
+import LabeledInputElement from './LabeledInputElement';
 import generateID from '../lib/generateID';
 import useOutsideClickListener from '../lib/useOutsideClickListener';
 import { color } from '../theme';
@@ -49,7 +50,7 @@ const DropdownButton = styled(Button)`
   }
 `;
 
-const DropdownLabel = styled.div`
+const DropdownText = styled.div`
   display: block;
   margin-right: 20px;
   white-space: nowrap;
@@ -196,34 +197,36 @@ function DropdownSelect({ label, options }) {
   useOutsideClickListener(dropdownContainerRef, closeDropdown);
 
   return (
-    <DropdownContainer ref={dropdownContainerRef}>
-      <DropdownButton
-        id={id}
-        ref={dropdownButtonRef}
-        isExpanded={isExpanded}
-        aria-haspopup="true"
-        aria-expanded={isExpanded.toString()}
-        onClick={handleDropDownButtonClick}
-        onKeyDown={handleDropdownButtonKeydown}
-      >
-        <DropdownLabel>{(options[selectionIdx] && options[selectionIdx].label) || label}</DropdownLabel>
-        <DropdownArrow isExpanded={isExpanded}><FontAwesomeIcon icon={faCaretDown} /></DropdownArrow>
-      </DropdownButton>
-      <DropdownMenu role="menu" aria-labelledby={id} isExpanded={isExpanded}>
-        {options.map((option, i) => (
-          <DropdownMenuItem
-            key={i}
-            href="#"
-            ref={optionRefs[i]}
-            role="menuitem"
-            onClick={() => { handleDropdownMenuItemClick(i); }}
-            onKeyDown={(event) => { handleDropdownMenuItemKeydown(event, i); }}
-          >
-            {option.label}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenu>
-    </DropdownContainer>
+    <LabeledInputElement label={label} htmlFor={id}>
+      <DropdownContainer ref={dropdownContainerRef}>
+        <DropdownButton
+          id={id}
+          ref={dropdownButtonRef}
+          isExpanded={isExpanded}
+          aria-haspopup="true"
+          aria-expanded={isExpanded.toString()}
+          onClick={handleDropDownButtonClick}
+          onKeyDown={handleDropdownButtonKeydown}
+        >
+          <DropdownText>{(options[selectionIdx] && options[selectionIdx].label) || label}</DropdownText>
+          <DropdownArrow isExpanded={isExpanded}><FontAwesomeIcon icon={faCaretDown} /></DropdownArrow>
+        </DropdownButton>
+        <DropdownMenu role="menu" aria-labelledby={id} isExpanded={isExpanded}>
+          {options.map((option, i) => (
+            <DropdownMenuItem
+              key={i}
+              href="#"
+              ref={optionRefs[i]}
+              role="menuitem"
+              onClick={() => { handleDropdownMenuItemClick(i); }}
+              onKeyDown={(event) => { handleDropdownMenuItemKeydown(event, i); }}
+            >
+              {option.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenu>
+      </DropdownContainer>
+    </LabeledInputElement>
   );
 }
 

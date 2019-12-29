@@ -6,8 +6,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 
-import { color, size } from '../theme';
+import LabeledInputElement from './LabeledInputElement';
 import generateID from '../lib/generateID';
+import { color, size } from '../theme';
 
 const Input = styled.input`
   font-size: ${size.font.large}px;
@@ -22,19 +23,12 @@ const Input = styled.input`
   }
 `;
 
-const Label = styled.label`
-  padding-left: 4px;
-  display: block;
-  font-size: ${size.font.small}px;
-`;
-
 function LabeledTextInput({ label, value, onChange, ...rest }) {
   const id = generateID('input');
   return (
-    <div>
-      <Input id={id} value={value} onChange={onChange} {...rest} />
-      <Label htmlFor={id}>{label}</Label>
-    </div>
+    <LabeledInputElement label={label} htmlFor={id}>
+      <Input type="text" id={id} value={value} onChange={onChange} {...rest} />
+    </LabeledInputElement>
   );
 }
 

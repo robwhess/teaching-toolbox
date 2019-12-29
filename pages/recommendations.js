@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { breakpoints } from '../theme';
 import Layout from '../components/Layout';
 import LabeledTextInput from '../components/LabeledTextInput';
-import DropdownSelect from '../components/DropdownSelect';
+import LabeledDropdownSelect from '../components/LabeledDropdownSelect';
 import Button from '../components/Button';
 
 const PageTitle = styled.h1`
@@ -69,7 +69,7 @@ function Index() {
         <h2>Relationship with me</h2>
         <InputRowContainer>
           <InputContainer>
-            <DropdownSelect
+            <LabeledDropdownSelect
               label="How have you worked with me?"
               options={[
                 { value: 'class', label: 'I took your course' },

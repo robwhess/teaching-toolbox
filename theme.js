@@ -17,6 +17,7 @@ const color = {
 
   complete: '#73ba56',
   invalid: '#e04d2d',
+  selected: '#b7e5f2',
 
   button: {
     primary: {

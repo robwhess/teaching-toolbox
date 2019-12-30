@@ -22,8 +22,6 @@ const keyCode = Object.freeze({
   'RETURN': 13,
   'ESC': 27,
   'SPACE': 32,
-  'PAGEUP': 33,
-  'PAGEDOWN': 34,
   'END': 35,
   'HOME': 36,
   'UP': 38,
@@ -36,7 +34,7 @@ const DropdownContainer = styled.div`
 
 const DropdownButton = styled(Button)`
   width: 100%;
-  border: 1px solid ${props => props.isExpanded ? color.primary.focused: color.primary.border};
+  border: 1px solid ${color.primary.border};
   background-color: ${color.primary.background};
   color: ${color.primary.font};
   display: flex;
@@ -64,65 +62,56 @@ const DropdownArrow = styled.div`
   transition: transform ease-in 100ms;
 `;
 
-const DropdownMenu = styled.div`
-  visibility: ${props => props.isExpanded ? 'visible' : 'hidden'};
+const DropdownList = styled.ul`
+  display: ${props => props.isExpanded ? 'initial' : 'none'};
   position: absolute;
   left: 0;
   right: 0;
-  top: 103%;
+  top: 110%;
+  margin: 0;
+  padding: 0;
   border: 1px solid ${color.primary.focused};
   border-radius: 4px;
   background-color: ${color.primary.background};
 `;
 
-const DropdownMenuItem = styled.a`
+const DropdownListOption = styled.li`
   display: block;
   padding: 10px 20px;
-  text-decoration: none;
   color: ${color.primary.font};
-  &:hover, &:focus {
-    background-color: ${color.primary.hover};
+  background-color: ${props => props.selected ? color.selected : 'initial'};
+  &:hover {
+    background-color: ${props => props.selected ? color.selected : color.primary.hover};
   }
 `;
 
-function DropdownSelect({ label, options }) {
+function LabeledDropdownSelect({ label, options, required }) {
   const id = generateID('dropdown');
   const [ isExpanded, setIsExpanded ] = useState(false);
-  const [ selectionIdx, setSelectionIdx ] = useState(-1);
+  const [ selectionIdx, setSelectionIdx ] = useState(0);
   const dropdownContainerRef = useRef(null);
   const dropdownButtonRef = useRef(null);
-  const optionRefs = options.map(() => useRef(null));
+  const dropdownListRef = useRef(null);
 
   function closeDropdown() {
-    setIsExpanded(false);
-    dropdownButtonRef.current.focus();
+    if (isExpanded) {
+      setIsExpanded(false);
+    }
   }
 
   function openDropdown() {
-    setIsExpanded(true);
-  }
-
-  function setFocusedOption(idx) {
-    /*
-     * Set focus after a brief timeout so the component has a chance to become
-     * visible.
-     */
+    if (!isExpanded) {
+      setIsExpanded(true);
+    }
     setTimeout(() => {
-      optionRefs[idx].current.focus();
+      dropdownListRef.current.focus();
     }, 10);
-  }
-
-  function handleDropDownButtonClick() {
-    setIsExpanded(!isExpanded);
-    dropdownButtonRef.current.focus();
   }
 
   function handleDropdownButtonKeydown(event) {
     switch (event.keyCode) {
       case keyCode.RETURN:
-      case keyCode.SPACE:
-        openDropdown(0);
-        setFocusedOption(0);
+        openDropdown();
         /*
          * Prevent default action here so these keys are not treated as clicks.
          */
@@ -131,12 +120,12 @@ function DropdownSelect({ label, options }) {
 
       case keyCode.DOWN:
         openDropdown();
-        setFocusedOption(0);
+        setSelectionIdx(0);
         break;
 
       case keyCode.UP:
         openDropdown();
-        setFocusedOption(options.length - 1);
+        setSelectionIdx(options.length - 1);
         break;
 
       case keyCode.ESC:
@@ -148,17 +137,16 @@ function DropdownSelect({ label, options }) {
     }
   }
 
-  function handleDropdownMenuItemClick(idx) {
+  function handleDropdownListOptionClick(idx) {
     setSelectionIdx(idx);
     closeDropdown();
   }
 
-  function handleDropdownMenuItemKeydown(event, idx) {
+  function handleDropdownListKeydown(event) {
     switch (event.keyCode) {
       case keyCode.RETURN:
-      case keyCode.SPACE:
-        setSelectionIdx(idx);
         closeDropdown();
+        dropdownButtonRef.current.focus();
         /*
          * Prevent default action here so these keys are not treated as clicks.
          */
@@ -166,27 +154,24 @@ function DropdownSelect({ label, options }) {
         break;
 
       case keyCode.DOWN:
-        setFocusedOption((idx + 1) % options.length);
+        setSelectionIdx((selectionIdx + 1) % options.length);
         break;
 
       case keyCode.UP:
-        idx = idx === 0 ? options.length - 1 : idx - 1;
-        setFocusedOption(idx);
+        setSelectionIdx(selectionIdx === 0 ? options.length - 1 : selectionIdx - 1);
         break;
 
       case keyCode.HOME:
-      case keyCode.PAGEUP:
-        setFocusedOption(0);
+        setSelectionIdx(0);
         break;
 
       case keyCode.END:
-      case keyCode.PAGEDOWN:
-        setFocusedOption(options.length - 1);
+        setSelectionIdx(options.length - 1);
         break;
 
-      case keyCode.TAB:
       case keyCode.ESC:
         closeDropdown();
+        dropdownButtonRef.current.focus();
         break;
 
       default:
@@ -197,45 +182,57 @@ function DropdownSelect({ label, options }) {
   useOutsideClickListener(dropdownContainerRef, closeDropdown);
 
   return (
-    <LabeledInputElement label={label} htmlFor={id}>
+    <LabeledInputElement label={label} htmlFor={id} required={required}>
       <DropdownContainer ref={dropdownContainerRef}>
         <DropdownButton
           id={id}
           ref={dropdownButtonRef}
           isExpanded={isExpanded}
-          aria-haspopup="true"
+          aria-haspopup="listbox"
           aria-expanded={isExpanded.toString()}
-          onClick={handleDropDownButtonClick}
+          onClick={openDropdown}
           onKeyDown={handleDropdownButtonKeydown}
         >
-          <DropdownText>{(options[selectionIdx] && options[selectionIdx].label) || label}</DropdownText>
+          <DropdownText>{(options[selectionIdx] && options[selectionIdx].label) || ''}</DropdownText>
           <DropdownArrow isExpanded={isExpanded}><FontAwesomeIcon icon={faCaretDown} /></DropdownArrow>
         </DropdownButton>
-        <DropdownMenu role="menu" aria-labelledby={id} isExpanded={isExpanded}>
+        <DropdownList
+          role="listbox"
+          tabIndex="-1"
+          aria-labelledby={id}
+          isExpanded={isExpanded}
+          ref={dropdownListRef}
+          onKeyDown={handleDropdownListKeydown}
+        >
           {options.map((option, i) => (
-            <DropdownMenuItem
+            <DropdownListOption
               key={i}
-              href="#"
-              ref={optionRefs[i]}
-              role="menuitem"
-              onClick={() => { handleDropdownMenuItemClick(i); }}
-              onKeyDown={(event) => { handleDropdownMenuItemKeydown(event, i); }}
+              id={`${id}-${i}`}
+              role="option"
+              selected={selectionIdx === i}
+              aria-selected={(selectionIdx === i).toString()}
+              onClick={() => { handleDropdownListOptionClick(i); }}
             >
               {option.label}
-            </DropdownMenuItem>
+            </DropdownListOption>
           ))}
-        </DropdownMenu>
+        </DropdownList>
       </DropdownContainer>
     </LabeledInputElement>
   );
 }
 
-DropdownSelect.propTypes = {
+LabeledDropdownSelect.propTypes = {
   label: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.string.isRequired,
     value: PropTypes.any.isRequired
-  }))
+  })).isRequired,
+  required: PropTypes.bool
 };
 
-export default DropdownSelect;
+LabeledDropdownSelect.defaultProps = {
+  required: false
+};
+
+export default LabeledDropdownSelect;

@@ -2,7 +2,7 @@
  * A text input component with a little label below it.
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 
@@ -24,10 +24,10 @@ const Input = styled.input`
 `;
 
 function LabeledTextInput({ label, value, onChange, ...rest }) {
-  const id = generateID('input');
+  const id = useRef(generateID('input'));
   return (
-    <LabeledInputElement label={label} htmlFor={id}>
-      <Input type="text" id={id} value={value} onChange={onChange} {...rest} />
+    <LabeledInputElement label={label} htmlFor={id.current}>
+      <Input type="text" id={id.current} value={value} onChange={onChange} {...rest} />
     </LabeledInputElement>
   );
 }
@@ -36,7 +36,7 @@ LabeledTextInput.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  containerWidth: PropTypes.bool,
+  containerWidth: PropTypes.bool
 };
 
 LabeledTextInput.defaultProps = {

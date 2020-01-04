@@ -86,7 +86,7 @@ const DropdownListOption = styled.li`
 `;
 
 function LabeledDropdownSelect({ label, options, required }) {
-  const id = generateID('dropdown');
+  const id = useRef(generateID('dropdown'));
   const [ isExpanded, setIsExpanded ] = useState(false);
   const [ selectionIdx, setSelectionIdx ] = useState(0);
   const dropdownContainerRef = useRef(null);
@@ -182,10 +182,10 @@ function LabeledDropdownSelect({ label, options, required }) {
   useOutsideClickListener(dropdownContainerRef, closeDropdown);
 
   return (
-    <LabeledInputElement label={label} htmlFor={id} required={required}>
+    <LabeledInputElement label={label} htmlFor={id.current} required={required}>
       <DropdownContainer ref={dropdownContainerRef}>
         <DropdownButton
-          id={id}
+          id={id.current}
           ref={dropdownButtonRef}
           isExpanded={isExpanded}
           aria-haspopup="listbox"
@@ -199,7 +199,8 @@ function LabeledDropdownSelect({ label, options, required }) {
         <DropdownList
           role="listbox"
           tabIndex="-1"
-          aria-labelledby={id}
+          aria-labelledby={id.current}
+          aria-activedescendant={isExpanded ? `${id.current}-${selectionIdx}` : null}
           isExpanded={isExpanded}
           ref={dropdownListRef}
           onKeyDown={handleDropdownListKeydown}
@@ -207,7 +208,7 @@ function LabeledDropdownSelect({ label, options, required }) {
           {options.map((option, i) => (
             <DropdownListOption
               key={i}
-              id={`${id}-${i}`}
+              id={`${id.current}-${i}`}
               role="option"
               selected={selectionIdx === i}
               aria-selected={(selectionIdx === i).toString()}
@@ -227,8 +228,7 @@ LabeledDropdownSelect.propTypes = {
   options: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.string.isRequired,
     value: PropTypes.any.isRequired
-  })).isRequired,
-  required: PropTypes.bool
+  })).isRequired
 };
 
 LabeledDropdownSelect.defaultProps = {

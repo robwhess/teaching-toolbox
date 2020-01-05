@@ -2,7 +2,7 @@
  * Labeled ropdown select component with pretty good WAI-ARIA/keyboard support.
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -85,13 +85,33 @@ const DropdownListOption = styled.li`
   }
 `;
 
-function LabeledDropdownSelect({ label, options, required }) {
+function LabeledDropdownSelect({ label, options, onChange }) {
   const id = useRef(generateID('dropdown'));
   const [ isExpanded, setIsExpanded ] = useState(false);
   const [ selectionIdx, setSelectionIdx ] = useState(0);
-  const dropdownContainerRef = useRef(null);
+  const [ prevSelectionIdx, setPrevSelectionIdx ] = useState(selectionIdx);
   const dropdownButtonRef = useRef(null);
   const dropdownListRef = useRef(null);
+
+  /*
+   * Make sure the dropdown list gets focus whenever the dropdown is expanded.
+   */
+  useEffect(() => {
+    if (isExpanded) {
+      dropdownListRef.current.focus();
+    }
+  }, [ isExpanded ]);
+
+  /*
+   * If the dropdown list closes and the selection has changed, "commit" the
+   * change by calling onChange().
+   */
+  useEffect(() => {
+    if (!isExpanded && selectionIdx !== prevSelectionIdx) {
+      onChange(options[selectionIdx].value);
+      setPrevSelectionIdx(selectionIdx);
+    }
+  }, [ isExpanded, selectionIdx, prevSelectionIdx, options ]);
 
   function closeDropdown() {
     if (isExpanded) {
@@ -103,9 +123,6 @@ function LabeledDropdownSelect({ label, options, required }) {
     if (!isExpanded) {
       setIsExpanded(true);
     }
-    setTimeout(() => {
-      dropdownListRef.current.focus();
-    }, 10);
   }
 
   function handleDropdownButtonKeydown(event) {
@@ -179,11 +196,11 @@ function LabeledDropdownSelect({ label, options, required }) {
     }
   }
 
-  useOutsideClickListener(dropdownContainerRef, closeDropdown);
+  useOutsideClickListener(dropdownListRef, closeDropdown);
 
   return (
-    <LabeledInputElement label={label} htmlFor={id.current} required={required}>
-      <DropdownContainer ref={dropdownContainerRef}>
+    <LabeledInputElement label={label} htmlFor={id.current}>
+      <DropdownContainer>
         <DropdownButton
           id={id.current}
           ref={dropdownButtonRef}
@@ -228,11 +245,8 @@ LabeledDropdownSelect.propTypes = {
   options: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.string.isRequired,
     value: PropTypes.any.isRequired
-  })).isRequired
-};
-
-LabeledDropdownSelect.defaultProps = {
-  required: false
+  })).isRequired,
+  onChange: PropTypes.func.isRequired
 };
 
 export default LabeledDropdownSelect;
